@@ -14,15 +14,25 @@ TRIES = 6
 def check_guess(guess, answer):
     """Checks a given guess"""
 
-    guessed = []
+    # frequency count for each letter
+    answer_counts = {c: answer.count(c) for c in answer}
 
+    guessed = [''] * len(guess)
+
+    # First pass: Correct placements
     for i, letter in enumerate(guess):
         if answer[i] == guess[i]:
-            guessed.append(Util.correct_place(letter))
-        elif letter in answer:
-            guessed.append(Util.correct_letter(letter))
-        else:
-            guessed.append(Util.incorrect_letter(letter))
+            guessed[i] = Util.correct_place(letter)
+            answer_counts[letter] -= 1
+
+    # Second pass: Incorrect placements
+    for i, letter in enumerate(guess):
+        if guessed[i] == '':
+            if letter in answer and answer_counts.get(letter, 0) > 0:
+                guessed[i] = Util.correct_letter(letter)
+                answer_counts[letter] -= 1
+            else:
+                guessed[i] = Util.incorrect_letter(letter)
 
     return ' '.join(guessed)
 
@@ -71,7 +81,7 @@ def game(console, word):
 
 
 if __name__ == '__main__':
-    console = Console(width=35)
+    console = Console(width=40)
     word = choice(word_list)
 
     console.print(WELCOME_MESSAGE, justify='center')
