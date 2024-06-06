@@ -8,6 +8,8 @@ from utils import Util
 WELCOME_MESSAGE = f'\n[white on blue] WELCOME TO WORDLE [/]\n'
 GUESS_STATEMENT = 'Enter your guess: '
 INSTRUCTIONS = 'You may start guessing\n'
+CONTINUE_STATEMENT = 'Would you like to continue playing (yes/no)?\n'
+EXIT_STATEMENT = '\n[white on green]Thanks for playing![/]\n'
 TRIES = 6
 
 
@@ -37,54 +39,69 @@ def check_guess(guess, answer):
     return ' '.join(guessed)
 
 
-def game(console, word):
+def game(console):
     """Game loop
 
     Args:
         console: Rich console.
-        word (str): The word to guess.
     """
 
     playing = True
-    already_guessed = set()
-    all_guessed = []
 
     while playing:
-        guess = input(GUESS_STATEMENT).upper()
+        console.print(INSTRUCTIONS, justify='center')
+
+        word = choice(word_list)
+        print(word)
+
+        already_guessed = set()
+        all_guessed = []
 
         while True:
-            if len(guess) != 5:
-                console.print('[red]Please enter a 5-letter word!!\n[/]')
-            elif guess in already_guessed:
-                console.print("[red]You've already guessed this word!!\n[/]")
-            else:
-                break
-
             guess = input(GUESS_STATEMENT).upper()
 
-        already_guessed.add(guess)
-        guessed = check_guess(guess, word)
-        all_guessed.append(guessed)
+            while True:
+                if len(guess) != 5:
+                    console.print('[red]Please enter a 5-letter word!!\n[/]')
+                elif guess in already_guessed:
+                    console.print("[red]You've already guessed this word!!\n[/]")
+                else:
+                    break
 
-        console.print('')
-        console.print(*all_guessed, sep='\n\n', justify='center')
-        console.print('')
+                guess = input(GUESS_STATEMENT).upper()
 
-        if guess == word or len(already_guessed) == TRIES:
+            already_guessed.add(guess)
+            guessed = check_guess(guess, word)
+            all_guessed.append(guessed)
+
+            console.print('')
+            console.print(*all_guessed, sep='\n\n', justify='center')
+            console.print('')
+
+            if guess == word or len(already_guessed) == TRIES:
+                break
+
+        if guess != word:
+            console.print(f'\n[red]WORDLE X/{TRIES}[/]')
+            console.print(f'\n[green]Correct Word: {word}[/]')
+        else:
+            console.print(f'\n[green]WORDLE {len(already_guessed)}/{TRIES}[/]\n')
+
+        keep_playing = input(CONTINUE_STATEMENT).upper().strip()
+        while keep_playing != 'YES' and keep_playing != 'NO':
+            keep_playing = input(CONTINUE_STATEMENT).upper().strip()
+
+        if keep_playing == 'YES':
+            console.print('')
+            playing = True
+        else:
+            console.print(EXIT_STATEMENT)
             playing = False
-
-    if guess != word:
-        console.print(f'\n[red]WORDLE X/{TRIES}[/]')
-        console.print(f'\n[green]Correct Word: {word}[/]')
-    else:
-        console.print(f'\n[green]WORDLE {len(already_guessed)}/{TRIES}[/]\n')
 
 
 if __name__ == '__main__':
     console = Console(width=40)
-    word = choice(word_list)
 
     console.print(WELCOME_MESSAGE, justify='center')
-    console.print(INSTRUCTIONS, justify='center')
 
-    game(console, word)
+    game(console)
