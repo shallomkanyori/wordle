@@ -3,7 +3,10 @@
 from rich.console import Console
 from rich.table import Table
 from rich.padding import Padding
+
 from random import choice
+import enchant
+
 from words import word_list
 from utils import Util
 
@@ -13,6 +16,8 @@ INSTRUCTIONS = 'You may start guessing\n'
 CONTINUE_STATEMENT = 'Would you like to continue playing (yes/no)?\n'
 EXIT_STATEMENT = '\n[white on green]Thanks for playing![/]\n'
 TRIES = 6
+
+d = enchant.Dict("en_US")
 
 
 def check_guess(guess, answer):
@@ -68,6 +73,8 @@ def game(console):
                     console.print('[red]Please enter a 5-letter word!!\n[/]')
                 elif guess in already_guessed:
                     console.print("[red]You've already guessed this word!!\n[/]")
+                elif not d.check(guess):
+                    console.print('[red]Word not found\n[/]')
                 else:
                     break
 
