@@ -6,14 +6,15 @@ from rich.padding import Padding
 
 from random import choice
 import enchant
+import readline
 
 from words import word_list
 from utils import Util
 
 WELCOME_MESSAGE = f'\n[white on blue] WELCOME TO WORDLE [/]\n'
-GUESS_STATEMENT = ' Enter your guess: '
+GUESS_STATEMENT = ' Enter your guess:'
 INSTRUCTIONS = 'You may start guessing\n'
-CONTINUE_STATEMENT = ' Would you like to continue (yes/no): '
+CONTINUE_STATEMENT = ' Would you like to continue (yes/no):'
 EXIT_STATEMENT = '\n [white on green] Thanks for playing! [/]\n'
 TRIES = 6
 
@@ -65,7 +66,8 @@ def game(console):
         all_guessed = []
 
         while True:
-            guess = console.input(GUESS_STATEMENT).upper()
+            console.print(GUESS_STATEMENT, end='')
+            guess = input("\u00A0").upper().strip()
 
             while True:
                 if len(guess) != 5:
@@ -82,7 +84,8 @@ def game(console):
                 else:
                     break
 
-                guess = console.input(GUESS_STATEMENT).upper()
+                console.print(GUESS_STATEMENT, end='')
+                guess = input("\u00A0").upper().strip()
 
             already_guessed.add(guess)
             guessed = check_guess(guess, word)
@@ -94,14 +97,16 @@ def game(console):
                 break
 
         if guess != word:
-            console.print(f'\n[red] WORDLE X/{TRIES}[/]', justify='center')
+            console.print(f'\n[red] WORDLE X/{TRIES}[/]')
             console.print(f'\n[green] Correct Word: {word}[/]')
         else:
             console.print(f'\n[green] WORDLE {len(already_guessed)}/{TRIES}[/]\n')
 
-        keep_playing = console.input(CONTINUE_STATEMENT).upper()
+        console.print(CONTINUE_STATEMENT, end='')
+        keep_playing = input("\u00A0").upper().strip()
         while keep_playing != 'YES' and keep_playing != 'NO':
-            keep_playing = console.input(CONTINUE_STATEMENT).upper()
+            console.print(CONTINUE_STATEMENT, end='')
+            keep_playing = input("\u00A0").upper().strip()
 
         if keep_playing == 'YES':
             console.print('')
