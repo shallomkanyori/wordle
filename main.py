@@ -11,10 +11,10 @@ from words import word_list
 from utils import Util
 
 WELCOME_MESSAGE = f'\n[white on blue] WELCOME TO WORDLE [/]\n'
-GUESS_STATEMENT = 'Enter your guess: '
+GUESS_STATEMENT = ' Enter your guess: '
 INSTRUCTIONS = 'You may start guessing\n'
-CONTINUE_STATEMENT = 'Would you like to continue playing (yes/no)?\n'
-EXIT_STATEMENT = '\n[white on green]Thanks for playing![/]\n'
+CONTINUE_STATEMENT = ' Would you like to continue (yes/no): '
+EXIT_STATEMENT = '\n [white on green] Thanks for playing! [/]\n'
 TRIES = 6
 
 d = enchant.Dict("en_US")
@@ -60,31 +60,33 @@ def game(console):
 
         word = choice(word_list)
         grid = Table.grid(padding=1)
-        # print(word)
 
         already_guessed = set()
         all_guessed = []
 
         while True:
-            guess = input(GUESS_STATEMENT).upper()
+            guess = console.input(GUESS_STATEMENT).upper()
 
             while True:
                 if len(guess) != 5:
-                    console.print('[red]Please enter a 5-letter word!!\n[/]')
+                    console.print('[red] Please enter a 5-letter word\n[/]',
+                                  justify='center')
+
                 elif guess in already_guessed:
-                    console.print("[red]You've already guessed this word!!\n[/]")
+                    console.print("[red] You've already guessed this word!\n[/]",
+                                  justify='center')
+
                 elif not d.check(guess):
-                    console.print('[red]Word not found\n[/]')
+                    console.print('[red] Word not found\n[/]',
+                                  justify='center')
                 else:
                     break
 
-                guess = input(GUESS_STATEMENT).upper()
+                guess = console.input(GUESS_STATEMENT).upper()
 
             already_guessed.add(guess)
             guessed = check_guess(guess, word)
             grid.add_row(*guessed)
-            # grid.add_row('')
-            # all_guessed.append(guessed)
 
             console.print(Padding(grid, (1, 0)), justify='center')
 
@@ -92,25 +94,25 @@ def game(console):
                 break
 
         if guess != word:
-            console.print(f'\n[red]WORDLE X/{TRIES}[/]')
-            console.print(f'\n[green]Correct Word: {word}[/]')
+            console.print(f'\n[red] WORDLE X/{TRIES}[/]', justify='center')
+            console.print(f'\n[green] Correct Word: {word}[/]')
         else:
-            console.print(f'\n[green]WORDLE {len(already_guessed)}/{TRIES}[/]\n')
+            console.print(f'\n[green] WORDLE {len(already_guessed)}/{TRIES}[/]\n')
 
-        keep_playing = input(CONTINUE_STATEMENT).upper().strip()
+        keep_playing = console.input(CONTINUE_STATEMENT).upper()
         while keep_playing != 'YES' and keep_playing != 'NO':
-            keep_playing = input(CONTINUE_STATEMENT).upper().strip()
+            keep_playing = console.input(CONTINUE_STATEMENT).upper()
 
         if keep_playing == 'YES':
             console.print('')
             playing = True
         else:
-            console.print(EXIT_STATEMENT)
+            console.print(EXIT_STATEMENT, justify='center')
             playing = False
 
 
 if __name__ == '__main__':
-    console = Console(width=40)
+    console = Console(width=45)
 
     console.print(WELCOME_MESSAGE, justify='center')
 
