@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Main module for the Wordle clone"""
 from rich.console import Console
+from rich.table import Table
+from rich.padding import Padding
 from random import choice
 from words import word_list
 from utils import Util
@@ -36,7 +38,7 @@ def check_guess(guess, answer):
             else:
                 guessed[i] = Util.incorrect_letter(letter)
 
-    return ' '.join(guessed)
+    return guessed
 
 
 def game(console):
@@ -52,7 +54,8 @@ def game(console):
         console.print(INSTRUCTIONS, justify='center')
 
         word = choice(word_list)
-        print(word)
+        grid = Table.grid(padding=1)
+        # print(word)
 
         already_guessed = set()
         all_guessed = []
@@ -72,11 +75,11 @@ def game(console):
 
             already_guessed.add(guess)
             guessed = check_guess(guess, word)
-            all_guessed.append(guessed)
+            grid.add_row(*guessed)
+            # grid.add_row('')
+            # all_guessed.append(guessed)
 
-            console.print('')
-            console.print(*all_guessed, sep='\n\n', justify='center')
-            console.print('')
+            console.print(Padding(grid, (1, 0)), justify='center')
 
             if guess == word or len(already_guessed) == TRIES:
                 break
