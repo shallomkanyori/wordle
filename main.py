@@ -13,9 +13,15 @@ from utils import Util
 
 WELCOME_MESSAGE = f'\n[white on blue] WELCOME TO WORDLE [/]\n'
 GUESS_STATEMENT = ' Enter your guess:'
-INSTRUCTIONS = 'You may start guessing\n'
+INSTRUCTIONS = ('Guess the word!\n'
+                '[white on green]Green[/] is a correctly placed letter.\n'
+                '[white on yellow]Yellow[/] is an incorrectly placed letter.\n'
+                '[white on grey37]Grey[/] is an incorrect letter.\n'
+                'Type exit to quit the game\n')
+START_MESSAGE = 'You may start guessing\n'
 CONTINUE_STATEMENT = ' Would you like to continue (yes/no):'
-EXIT_STATEMENT = '\n [white on green] Thanks for playing! [/]\n'
+EXIT_STATEMENT = ' Would you like to quit (yes/no):'
+EXIT_MESSAGE = '\n [white on green] Thanks for playing! [/]\n'
 TRIES = 6
 
 d = enchant.Dict("en_US")
@@ -56,8 +62,10 @@ def game(console):
 
     playing = True
 
+    console.print(INSTRUCTIONS, justify='center')
+
     while playing:
-        console.print(INSTRUCTIONS, justify='center')
+        console.print(START_MESSAGE, justify='center')
 
         word = choice(word_list)
         grid = Table.grid(padding=1)
@@ -68,6 +76,10 @@ def game(console):
         while True:
             console.print(GUESS_STATEMENT, end='')
             guess = input("\u00A0").upper().strip()
+
+            if guess == 'EXIT':
+                playing = False
+                break
 
             while True:
                 if len(guess) != 5:
@@ -96,24 +108,33 @@ def game(console):
             if guess == word or len(already_guessed) == TRIES:
                 break
 
-        if guess != word:
-            console.print(f'\n[red] WORDLE X/{TRIES}[/]')
+        if not playing:
+            # Player typed exit or quit
             console.print(f'\n[green] Correct Word: {word}[/]')
-        else:
-            console.print(f'\n[green] WORDLE {len(already_guessed)}/{TRIES}[/]\n')
 
-        console.print(CONTINUE_STATEMENT, end='')
-        keep_playing = input("\u00A0").upper().strip()
-        while keep_playing != 'YES' and keep_playing != 'NO':
-            console.print(CONTINUE_STATEMENT, end='')
-            keep_playing = input("\u00A0").upper().strip()
-
-        if keep_playing == 'YES':
-            console.print('')
-            playing = True
+            exit = Util.prompt(console, EXIT_STATEMENT, ['YES', 'NO'])
+            if exit == 'YES':
+                console.print(EXIT_MESSAGE, justify='center')
+                playing = False
+            else:
+                console.print('')
+                playing = True
         else:
-            console.print(EXIT_STATEMENT, justify='center')
-            playing = False
+
+            if guess != word:
+                console.print(f'\n[red] WORDLE X/{TRIES}[/]')
+                console.print(f'\n[green] Correct Word: {word}[/]')
+            else:
+                console.print(f'\n[green] WORDLE {len(already_guessed)}/{TRIES}[/]\n')
+
+            keep_playing = Util.prompt(console, CONTINUE_STATEMENT,
+                                       ['YES', 'NO'])
+            if keep_playing == 'YES':
+                console.print('')
+                playing = True
+            else:
+                console.print(EXIT_MESSAGE, justify='center')
+                playing = False
 
 
 if __name__ == '__main__':

@@ -19,3 +19,20 @@ class Util:
     def incorrect_letter(letter):
         """Returns a styled string for an incorrect letter"""
         return f'[bold white on grey39] {letter} [/]'
+
+    @staticmethod
+    def prompt(console, prompt_msg, valid):
+        """Returns user input to a prompt after validating
+
+        Args:
+            console: Rich console.
+            prompt_msg (str): The prompt message.
+            valid (list of str):  Valid options for the input.
+        """
+        usr_input = ''
+
+        while usr_input not in valid:
+            console.print(prompt_msg, end='')
+            usr_input = input("\u00A0").upper().strip()
+
+        return usr_input
